@@ -298,7 +298,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         text_input = self.tokenizer(
             prompt,
             padding="max_length",
-            max_length=64,  # self.tokenizer.model_max_length,
+            max_length=77,  # self.tokenizer.model_max_length,
             truncation=True,
             return_tensors="pt",
         )
