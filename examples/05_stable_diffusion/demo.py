@@ -22,19 +22,21 @@ from pipeline_stable_diffusion_ait import StableDiffusionAITPipeline
 @click.command()
 @click.option("--token", default="", help="access token")
 @click.option("--prompt", default="A vision of paradise, Unreal Engine", help="prompt")
+@click.option("--dict", default="", help="prompt")
 @click.option(
     "--benchmark", type=bool, default=False, help="run stable diffusion e2e benchmark"
 )
-def run(token, prompt, benchmark):
+def run(token, prompt, dictPath,benchmark):
     pipe = StableDiffusionAITPipeline.from_pretrained(
         "CompVis/stable-diffusion-v1-4",
         revision="fp16",
         torch_dtype=torch.float16,
-        use_auth_token=token,
+        use_auth_token=token,        
     ).to("cuda")
-
+    if(dictPath == ""):
+        dictPath = None
     with torch.autocast("cuda"):
-        image = pipe(prompt).images[0]
+        image = pipe(prompt,dictPath).images[0]
         if benchmark:
             t = benchmark_torch_function(10, pipe, prompt)
             print(f"sd e2e: {t} ms")

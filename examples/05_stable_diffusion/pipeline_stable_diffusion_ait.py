@@ -36,6 +36,49 @@ from diffusers.pipelines.stable_diffusion import (
 
 from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
 
+PROGRESSIVE_SCALE = 2000
+def embed_inversion(
+        tokenized_text,
+        embedded_text,
+        string_to_token_dict,
+        string_to_param_dict,
+        max_vectors_per_token = 1,
+        progressive_words = False
+):
+    b, n, device = *tokenized_text.shape, tokenized_text.device
+    progressive_counter = 0
+    for placeholder_string, placeholder_token in string_to_token_dict.items():
+        placeholder_embedding = string_to_param_dict[placeholder_string].to(device)
+        if max_vectors_per_token == 1: # If there's only one vector per token, we can do a simple replacement
+            placeholder_idx = torch.where(tokenized_text == placeholder_token.to(device))
+            embedded_text[placeholder_idx] = placeholder_embedding
+        else: # otherwise, need to insert and keep track of changing indices
+            if progressive_words:
+                progressive_counter += 1
+                max_step_tokens = 1 + progressive_counter // PROGRESSIVE_SCALE
+            else:
+                max_step_tokens = max_vectors_per_token
+
+            num_vectors_for_token = min(placeholder_embedding.shape[0], max_step_tokens)
+
+            placeholder_rows, placeholder_cols = torch.where(tokenized_text == placeholder_token.to(device))
+
+            if placeholder_rows.nelement() == 0:
+                continue
+
+            sorted_cols, sort_idx = torch.sort(placeholder_cols, descending=True)
+            sorted_rows = placeholder_rows[sort_idx]
+
+            for idx in range(len(sorted_rows)):
+                row = sorted_rows[idx]
+                col = sorted_cols[idx]
+                new_token_row = torch.cat([tokenized_text[row][:col], placeholder_token.repeat(num_vectors_for_token).to(device), tokenized_text[row][col + 1:]], axis=0)[:n]
+                new_embed_row = torch.cat([embedded_text[row][:col], placeholder_embedding[:num_vectors_for_token], embedded_text[row][col + 1:]], axis=0)[:n]
+                embedded_text[row]  = new_embed_row
+                tokenized_text[row] = new_token_row
+    return embedded_text
+
+
 
 class StableDiffusionAITPipeline(StableDiffusionPipeline):
     r"""
@@ -165,6 +208,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         latents: Optional[torch.FloatTensor] = None,
         output_type: Optional[str] = "pil",
         return_dict: bool = True,
+        ckpt_path: Optional[str] = None,
         **kwargs,
     ):
         r"""
@@ -245,8 +289,14 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             truncation=True,
             return_tensors="pt",
         )
+        b, n, device = *text_input.shape, text_input.device
         text_embeddings = self.clip_inference(text_input.input_ids.to(self.device))
-
+        if ckpt_path is not None:
+            ckpt = torch.load(self.ckpt_path, map_location='cpu')
+            string_to_token_dict = ckpt["string_to_token"]
+            string_to_param_dict = ckpt["string_to_param"]
+            text_embeddings = embed_inversion(text_embeddings, text_input, string_to_token_dict,string_to_param_dict);
+        
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
         # corresponds to doing no classifier free guidance.
