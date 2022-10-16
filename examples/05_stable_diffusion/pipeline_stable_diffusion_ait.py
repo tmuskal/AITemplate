@@ -47,8 +47,8 @@ def embed_inversion(
         progressive_words = False
 ):
     print(embedded_text)
-    tokenized_text = tokenized_text.data['input_ids']
-    embedded_text = embedded_text.data
+    tokenized_text = tokenized_text.data['input_ids'].to(device)
+    embedded_text = embedded_text.data.to(device)
     print(embedded_text.shape)
     print(tokenized_text)
     (b, n) = tokenized_text.shape
