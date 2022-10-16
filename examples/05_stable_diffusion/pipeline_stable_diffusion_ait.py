@@ -47,8 +47,8 @@ def embed_inversion(
         progressive_words = False
 ):
     print(embedded_text)
-    tokenized_text = tokenized_text
-    embedded_text = embedded_text
+    tokenized_text = tokenized_text.data
+    embedded_text = embedded_text.data
     print(embedded_text.shape)
     print(tokenized_text)
     (prompts,b, n) = tokenized_text.shape
