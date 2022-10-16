@@ -69,6 +69,8 @@ def embed_inversion(
 
             res1 = torch.where(tokenized_text == placeholder_token.to(device))
             print(res1)
+            print(placeholder_token)
+            
             placeholder_rows, placeholder_cols = res1
 
             if placeholder_rows.nelement() == 0:
