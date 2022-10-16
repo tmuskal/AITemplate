@@ -42,10 +42,11 @@ def embed_inversion(
         embedded_text,
         string_to_token_dict,
         string_to_param_dict,
+        device,
         max_vectors_per_token = 1,
         progressive_words = False
 ):
-    b, n, device = *tokenized_text.shape, tokenized_text.device
+    (b, n) = tokenized_text.shape
     progressive_counter = 0
     for placeholder_string, placeholder_token in string_to_token_dict.items():
         placeholder_embedding = string_to_param_dict[placeholder_string].to(device)
@@ -294,7 +295,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             ckpt = torch.load(ckpt_path, map_location='cpu')
             string_to_token_dict = ckpt["string_to_token"]
             string_to_param_dict = ckpt["string_to_param"]
-            text_embeddings = embed_inversion(text_embeddings, text_input, string_to_token_dict,string_to_param_dict);
+            text_embeddings = embed_inversion(text_embeddings, text_input, string_to_token_dict,string_to_param_dict,self.device);
         
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
