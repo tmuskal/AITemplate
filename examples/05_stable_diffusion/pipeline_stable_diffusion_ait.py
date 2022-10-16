@@ -46,7 +46,8 @@ def embed_inversion(
         max_vectors_per_token = 1,
         progressive_words = False
 ):
-    tokenized_text = tokenized_text.data['input_ids']
+    tokenized_text_data = tokenized_text.data
+    print(tokenized_text_data)
     
     (prompts,b, n) = tokenized_text.shape
     progressive_counter = 0
