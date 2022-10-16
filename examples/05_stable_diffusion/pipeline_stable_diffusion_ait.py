@@ -81,7 +81,7 @@ def embed_inversion(
                 new_embed_row = torch.cat([embedded_text[row][:col], placeholder_embedding[:num_vectors_for_token], embedded_text[row][col + 1:]], axis=0)[:n]
                 embedded_text[row]  = new_embed_row
                 tokenized_text[row] = new_token_row
-    return embedded_text
+    return embedded_text.to(device)
 
 
 
