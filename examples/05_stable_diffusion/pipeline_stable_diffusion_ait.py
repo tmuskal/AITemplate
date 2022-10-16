@@ -43,7 +43,7 @@ def embed_inversion(
         string_to_token_dict,
         string_to_param_dict,
         device,
-        max_vectors_per_token = 1,
+        max_vectors_per_token = 2,
         progressive_words = False
 ):
     print(embedded_text)
@@ -173,7 +173,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         noise_pred = ys[0].permute((0, 3, 1, 2)).float()
         return noise_pred
 
-    def clip_inference(self, input_ids, seqlen=64):
+    def clip_inference(self, input_ids, seqlen=64):        
         exe_module = self.clip_ait_exe
         bs = input_ids.shape[0]
         position_ids = torch.arange(seqlen).expand((bs, -1)).cuda()
