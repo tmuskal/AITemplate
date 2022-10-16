@@ -289,7 +289,6 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             truncation=True,
             return_tensors="pt",
         )
-        b, n, device = *text_input.shape, text_input.device
         text_embeddings = self.clip_inference(text_input.input_ids.to(self.device))
         if ckpt_path is not None:
             ckpt = torch.load(self.ckpt_path, map_location='cpu')
