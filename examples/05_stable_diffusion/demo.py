@@ -28,7 +28,7 @@ from pipeline_stable_diffusion_ait import StableDiffusionAITPipeline
 )
 def run(token, prompt, vocab,benchmark):
     pipe = StableDiffusionAITPipeline.from_pretrained(
-        "stable-diffusion-v1-3",
+        "CompVis/stable-diffusion-v1-3",
         revision="fp16",
         torch_dtype=torch.float16,
         use_auth_token=token,        
