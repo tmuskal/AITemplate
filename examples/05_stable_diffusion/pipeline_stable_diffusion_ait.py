@@ -315,7 +315,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         do_classifier_free_guidance = guidance_scale > 1.0
         # get unconditional embeddings for classifier free guidance
         if do_classifier_free_guidance:
-            max_length = text_input.input_ids.shape[-1]
+            max_length = 64
             uncond_input = self.tokenizer(
                 [""] * batch_size,
                 padding="max_length",
