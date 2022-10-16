@@ -36,7 +36,7 @@ def run(token, prompt, vocab,benchmark):
     if(vocab == ""):
         vocab = None
     with torch.autocast("cuda"):        
-        image = pipe(prompt,512,512,50,7.5,0.0,None,None,'pil',True,vocab).images[0]
+        image = pipe(prompt,512,512,50,10,0.0,None,None,'pil',True,vocab).images[0]
         if benchmark:
             t = benchmark_torch_function(10, pipe, prompt)
             print(f"sd e2e: {t} ms")
