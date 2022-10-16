@@ -305,7 +305,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             ckpt = torch.load(ckpt_path, map_location='cpu')
             string_to_token_dict = ckpt["string_to_token"]
             string_to_param_dict = ckpt["string_to_param"]
-            text_embeddings = embed_inversion(text_embeddings, text_input, string_to_token_dict,string_to_param_dict,self.device);
+            text_embeddings = embed_inversion(text_input,text_embeddings, string_to_token_dict,string_to_param_dict,self.device);
         
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
