@@ -43,7 +43,7 @@ def embed_inversion(
         string_to_token_dict,
         string_to_param_dict,
         device,
-        max_vectors_per_token = 1,
+        max_vectors_per_token = 16,
         progressive_words = False
 ):
     print(embedded_text)
