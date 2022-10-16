@@ -82,7 +82,7 @@ def embed_inversion(
                 embedded_text[row]  = new_embed_row
                 tokenized_text[row] = new_token_row
     
-    return embedded_text['input_ids'].to(device)
+    return embedded_text['input_ids'].to(device).unsqueeze(0)
 
 
 
