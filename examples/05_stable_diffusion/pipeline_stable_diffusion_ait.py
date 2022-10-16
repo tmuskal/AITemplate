@@ -51,7 +51,7 @@ def embed_inversion(
     embedded_text = embedded_text.data
     print(embedded_text.shape)
     print(tokenized_text)
-    (prompts,b, n) = tokenized_text.shape
+    (b, n) = tokenized_text.shape
     progressive_counter = 0
     for placeholder_string, placeholder_token in string_to_token_dict.items():
         placeholder_embedding = string_to_param_dict[placeholder_string].to(device)
