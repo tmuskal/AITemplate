@@ -49,7 +49,6 @@ def embed_inversion(
     print(embedded_text)
     tokenized_text = tokenized_text.data['input_ids'].to(device)
     embedded_text = embedded_text.data.to(device)
-    print(embedded_text.shape)
     print(tokenized_text)
     (b, n) = tokenized_text.shape
     progressive_counter = 0
@@ -85,7 +84,8 @@ def embed_inversion(
                 new_token_row = torch.cat([tokenized_text[row][:col], placeholder_token.repeat(num_vectors_for_token).to(device), tokenized_text[row][col + 1:]], axis=0)[:n]
                 new_embed_row = torch.cat([embedded_text[row][:col], placeholder_embedding[:num_vectors_for_token], embedded_text[row][col + 1:]], axis=0)[:n]
                 embedded_text[row]  = new_embed_row
-                tokenized_text[row] = new_token_row    
+                tokenized_text[row] = new_token_row
+    print(embedded_text)
     return embedded_text.to(device)
 
 
