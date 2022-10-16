@@ -291,7 +291,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         )
         text_embeddings = self.clip_inference(text_input.input_ids.to(self.device))
         if ckpt_path is not None:
-            ckpt = torch.load(self.ckpt_path, map_location='cpu')
+            ckpt = torch.load(ckpt_path, map_location='cpu')
             string_to_token_dict = ckpt["string_to_token"]
             string_to_param_dict = ckpt["string_to_param"]
             text_embeddings = embed_inversion(text_embeddings, text_input, string_to_token_dict,string_to_param_dict);
