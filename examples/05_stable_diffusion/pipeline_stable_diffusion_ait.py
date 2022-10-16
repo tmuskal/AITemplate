@@ -75,6 +75,7 @@ def embed_inversion(
             placeholder_rows, placeholder_cols = res1
 
             if placeholder_rows.nelement() == 0:
+                print("No placeholder token found")
                 continue
 
             sorted_cols, sort_idx = torch.sort(placeholder_cols, descending=True)
