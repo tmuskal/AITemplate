@@ -50,6 +50,7 @@ def embed_inversion(
     # tokenized_text = tokenized_text.data
     embedded_text = embedded_text.data['input_ids']
     print(embedded_text.shape)
+    print(tokenized_text)
     (prompts,b, n) = tokenized_text.shape
     progressive_counter = 0
     for placeholder_string, placeholder_token in string_to_token_dict.items():
