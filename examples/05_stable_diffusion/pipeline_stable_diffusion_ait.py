@@ -54,7 +54,7 @@ def embed_inversion(
     progressive_counter = 0
     for placeholder_string, placeholder_token in string_to_token_dict.items():
         placeholder_embedding = string_to_param_dict[placeholder_string].to(device)
-        print(placeholder_embedding)
+        print(placeholder_embedding.shape)
         if max_vectors_per_token == 1: # If there's only one vector per token, we can do a simple replacement
             placeholder_idx = torch.where(tokenized_text == placeholder_token.to(device))
             embedded_text[placeholder_idx] = placeholder_embedding
