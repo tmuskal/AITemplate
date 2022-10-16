@@ -67,7 +67,7 @@ def embed_inversion(
                 max_step_tokens = max_vectors_per_token
 
             num_vectors_for_token = min(placeholder_embedding.shape[0], max_step_tokens)
-
+            print(num_vectors_for_token)
             res1 = torch.where(tokenized_text == placeholder_token.to(device))
             print(res1)
             print(placeholder_token)
