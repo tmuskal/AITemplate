@@ -337,6 +337,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         clpText.eval()
         clpText.cuda()
         text_embeddings = clpText(text_input.input_ids, text_input.attention_mask)         
+        print(text_embeddings)
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
         # corresponds to doing no classifier free guidance.
