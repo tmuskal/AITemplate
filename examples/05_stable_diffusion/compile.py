@@ -209,7 +209,7 @@ def compile_unet(
 
 def compile_clip(
     batch_size=1,
-    seqlen=77,
+    seqlen=64,
     dim=768,
     num_heads=12,
     hidden_size=768,

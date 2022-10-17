@@ -180,7 +180,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         noise_pred = ys[0].permute((0, 3, 1, 2)).float()
         return noise_pred
 
-    def clip_inference(self, input_ids, seqlen=77):
+    def clip_inference(self, input_ids, seqlen=64):
         exe_module = self.clip_ait_exe
         bs = input_ids.shape[0]
         position_ids = torch.arange(seqlen).expand((bs, -1)).cuda()
@@ -298,7 +298,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         text_input = self.tokenizer(
             prompt,
             padding="max_length",
-            max_length=77,  # self.tokenizer.model_max_length,
+            max_length=64,  # self.tokenizer.model_max_length,
             truncation=True,
             return_tensors="pt",
         )
