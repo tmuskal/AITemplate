@@ -95,10 +95,11 @@ def embed_inversion(
 def load_learned_embed_in_clip(string_to_params_dict, string_to_token_dict, text_encoder, device):
     dtype = text_encoder.get_input_embeddings().weight.dtype
     for placeholder_string, placeholder_token in string_to_token_dict.items():
-        placeholder_embedding = string_to_params_dict[placeholder_string].to(device)  
+        # placeholder_embedding = string_to_token_dict[placeholder_string].to(device)  
         embeds = string_to_params_dict[placeholder_string].to(device)    
         embeds.to(dtype)
-        text_encoder.get_input_embeddings().weight.data[placeholder_embedding] = embeds
+
+        text_encoder.get_input_embeddings().weight.data[placeholder_token] = embeds
 
 #   num_added_tokens = tokenizer.add_tokens(token)
 #   if num_added_tokens == 0:
