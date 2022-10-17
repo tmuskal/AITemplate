@@ -336,7 +336,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             load_learned_embed_in_clip(string_to_param_dict, string_to_token_dict,clpText, self.device)
         clpText.eval()
         clpText.cuda()
-        text_embeddings = clpText(text_input.input_ids, text_input.attention_mask)         
+        text_embeddings = clpText(text_input.input_ids, text_input.attention_mask).last_hidden_state
         print(text_embeddings)
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
