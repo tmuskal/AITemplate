@@ -92,6 +92,24 @@ def embed_inversion(
     return embedded_text.to(device)
 
 
+def load_learned_embed_in_clip(string_to_params_dict, string_to_token_dict, text_encoder, device):
+    dtype = text_encoder.get_input_embeddings().weight.dtype
+    for placeholder_string, placeholder_token in string_to_token_dict.items():
+        placeholder_embedding = string_to_params_dict[placeholder_string].to(device)  
+        embeds = string_to_params_dict[placeholder_string].to(device)    
+        embeds.to(dtype)
+        text_encoder.get_input_embeddings().weight.data[placeholder_embedding] = embeds
+
+#   num_added_tokens = tokenizer.add_tokens(token)
+#   if num_added_tokens == 0:
+    # raise ValueError(f"The tokenizer already contains the token {token}. Please pass a different `token` that is not already in the tokenizer.")
+  
+  # resize the token embeddings
+#   text_encoder.resize_token_embeddings(len(tokenizer))
+  
+  # get the id for the token and assign the embeds
+#   token_id = string_to_token_dict[token]
+  
 
 class StableDiffusionAITPipeline(StableDiffusionPipeline):
     r"""
@@ -305,22 +323,17 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
 
 
         # clpModel = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
-        clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
-        clpText.eval()
-        clpText.cuda()
-        
+        clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")        
+
 
         text_input = text_input.to(self.device)
-        text_embeds = clpText(text_input.input_ids, text_input.attention_mask)
         
-
-        text_embeddings = text_embeds
         if ckpt_path is not None:
             ckpt = torch.load(ckpt_path, map_location='cpu')
             string_to_token_dict = ckpt["string_to_token"]
             string_to_param_dict = ckpt["string_to_param"]
-            text_embeddings = embed_inversion(text_input,text_embeddings, string_to_token_dict,string_to_param_dict,self.device);
-        
+            load_learned_embed_in_clip(string_to_param_dict, string_to_token_dict,clpText, self.device)                        
+        text_embeddings = clpText(text_input.input_ids, text_input.attention_mask)         
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
         # corresponds to doing no classifier free guidance.
