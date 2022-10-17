@@ -324,7 +324,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
 
 
         # clpModel = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
-        clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")        
+        clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")                
 
 
         text_input = text_input.to(self.device)
@@ -333,7 +333,9 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             ckpt = torch.load(ckpt_path, map_location='cpu')
             string_to_token_dict = ckpt["string_to_token"]
             string_to_param_dict = ckpt["string_to_param"]
-            load_learned_embed_in_clip(string_to_param_dict, string_to_token_dict,clpText, self.device)                        
+            load_learned_embed_in_clip(string_to_param_dict, string_to_token_dict,clpText, self.device)
+        clpText.eval()
+        clpText.cuda()
         text_embeddings = clpText(text_input.input_ids, text_input.attention_mask)         
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
