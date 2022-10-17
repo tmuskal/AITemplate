@@ -321,13 +321,13 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             truncation=True,
             return_tensors="pt",
         )
-
-
+        text_input = text_input.to(self.device)
+        text_embeddings2 = self.clip_inference(text_input["input_ids"],64)
         # clpModel = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
         clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")                
 
 
-        text_input = text_input.to(self.device)
+        
         
         if ckpt_path is not None:
             ckpt = torch.load(ckpt_path, map_location='cpu')
@@ -338,6 +338,10 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         clpText.cuda()
         text_embeddings = clpText(text_input.input_ids, text_input.attention_mask).last_hidden_state
         print(text_embeddings.shape)
+        print(text_embeddings2.shape)
+        print(text_embeddings)
+        print(text_embeddings2)
+        
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
         # corresponds to doing no classifier free guidance.
