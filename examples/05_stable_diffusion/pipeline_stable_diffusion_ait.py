@@ -337,12 +337,13 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         clpText.eval()
         clpText.cuda()
         text_embeddings = clpText(text_input.input_ids, text_input.attention_mask).last_hidden_state
+        text_embeddings = text_embeddings / torch.linalg.norm(text_embeddings, dim=1, keepdim=True)
         
         print(text_embeddings.shape)
         print(text_embeddings2.shape)
         print(text_embeddings)
         print(text_embeddings2)
-        text_embeddings = text_embeddings2
+        # text_embeddings = text_embeddings2
         
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
