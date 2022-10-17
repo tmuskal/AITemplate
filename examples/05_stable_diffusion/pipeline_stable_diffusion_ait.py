@@ -343,10 +343,10 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         position_ids = torch.arange(64).expand((batch_size, -1)).cuda()
         
         text_embeddings = clpText(text_input.input_ids, text_input.attention_mask,position_ids).last_hidden_state
-        text_embeddings = text_embeddings / torch.linalg.norm(text_embeddings, dim=1, keepdim=True)
+        # text_embeddings = text_embeddings / torch.linalg.norm(text_embeddings, dim=1, keepdim=True)
         if text_embeddings.ndim==2:
             text_embeddings = text_embeddings[:, None, :]
-        text_embeddings = repeat(text_embeddings, 'b 1 d -> b k d', k=1)
+        # text_embeddings = repeat(text_embeddings, 'b 1 d -> b k d', k=1)
 
         print(text_embeddings.shape)
         print(text_embeddings2.shape)
