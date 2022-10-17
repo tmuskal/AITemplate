@@ -302,7 +302,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             truncation=True,
             return_tensors="pt",
         )
-        text_embeddings = self.clip_inference(text_input.input_ids.to(self.device),77)
+        text_embeddings = self.clip_inference(text_input.input_ids.to(self.device),64)
         if ckpt_path is not None:
             ckpt = torch.load(ckpt_path, map_location='cpu')
             string_to_token_dict = ckpt["string_to_token"]
