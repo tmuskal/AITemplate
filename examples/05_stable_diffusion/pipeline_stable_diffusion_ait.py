@@ -34,7 +34,7 @@ from diffusers.pipelines.stable_diffusion import (
     StableDiffusionSafetyChecker,
 )
 
-from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
+from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer,CLIPTextModel, CLIPModel
 
 PROGRESSIVE_SCALE = 2000
 def embed_inversion(
@@ -302,7 +302,16 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             truncation=True,
             return_tensors="pt",
         )
-        text_embeddings = self.clip_inference(text_input.input_ids.to(self.device),64)
+
+
+        # clpModel = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
+        clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
+
+        text_input = text_input.to(self.device)
+        text_embeds = clpText(text_input.input_ids, text_input.attention_mask)
+        
+
+        text_embeddings = text_embeds
         if ckpt_path is not None:
             ckpt = torch.load(ckpt_path, map_location='cpu')
             string_to_token_dict = ckpt["string_to_token"]
