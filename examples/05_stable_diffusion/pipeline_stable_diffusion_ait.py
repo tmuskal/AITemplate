@@ -306,6 +306,9 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
 
         # clpModel = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
         clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
+        clpText.eval()
+        clpText.cuda()
+        
 
         text_input = text_input.to(self.device)
         text_embeds = clpText(text_input.input_ids, text_input.attention_mask)
