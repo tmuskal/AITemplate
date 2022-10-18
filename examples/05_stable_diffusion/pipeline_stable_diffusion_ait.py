@@ -342,7 +342,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         attention_mask = None
         position_ids = torch.arange(64).expand((batch_size, -1)).cuda()
         
-        text_embeddings = clpText(text_input.input_ids, text_input.attention_mask,position_ids)[0]
+        text_embeddings = clpText(text_input.input_ids)[0]
         bs_embed, seq_len, _ = text_embeddings.shape
         text_embeddings = text_embeddings.repeat(1, 1, 1)
         text_embeddings = text_embeddings.view(bs_embed * 1, seq_len, -1)
