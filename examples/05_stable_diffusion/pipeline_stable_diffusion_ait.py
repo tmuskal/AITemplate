@@ -344,8 +344,8 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         
         text_embeddings = clpText(text_input.input_ids, text_input.attention_mask,position_ids)[0]
         bs_embed, seq_len, _ = text_embeddings.shape
-        text_embeddings = text_embeddings.repeat(1, num_images_per_prompt, 1)
-        text_embeddings = text_embeddings.view(bs_embed * num_images_per_prompt, seq_len, -1)
+        text_embeddings = text_embeddings.repeat(1, 1, 1)
+        text_embeddings = text_embeddings.view(bs_embed * 1, seq_len, -1)
         # text_embeddings = text_embeddings / torch.linalg.norm(text_embeddings, dim=1, keepdim=True)
         # if text_embeddings.ndim==2:
         #     text_embeddings = text_embeddings[:, None, :]
