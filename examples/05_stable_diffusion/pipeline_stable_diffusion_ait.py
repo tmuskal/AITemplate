@@ -322,7 +322,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             return_tensors="pt",
         )
         text_input = text_input.to(self.device)
-        text_embeddings2 = self.clip_inference(text_input["input_ids"],64)
+        # text_embeddings2 = self.clip_inference(text_input["input_ids"],64)
         # clpModel = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
         clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")                
 
@@ -335,27 +335,11 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             string_to_param_dict = ckpt["string_to_param"]
             load_learned_embed_in_clip(string_to_param_dict, string_to_token_dict,clpText, self.device)
         clpText.eval()
-        clpText.cuda()
-        attention_mask = torch.ones((batch_size, 64))
-        mask_seq = 0
-        attention_mask[-1, -mask_seq:] = 0
-        attention_mask = None
-        position_ids = torch.arange(64).expand((batch_size, -1)).cuda()
-        
+        clpText.cuda()        
         text_embeddings = clpText(text_input.input_ids)[0]
         bs_embed, seq_len, _ = text_embeddings.shape
         text_embeddings = text_embeddings.repeat(1, 1, 1)
         text_embeddings = text_embeddings.view(bs_embed * 1, seq_len, -1)
-        # text_embeddings = text_embeddings / torch.linalg.norm(text_embeddings, dim=1, keepdim=True)
-        # if text_embeddings.ndim==2:
-        #     text_embeddings = text_embeddings[:, None, :]
-        # text_embeddings = repeat(text_embeddings, 'b 1 d -> b k d', k=1)
-
-        print(text_embeddings.shape)
-        print(text_embeddings2.shape)
-        print(text_embeddings)
-        print(text_embeddings2)
-        # text_embeddings = text_embeddings2
         
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
