@@ -111,6 +111,9 @@ def load_learned_embed_in_clip(string_to_params_dict, string_to_token_dict, text
   # get the id for the token and assign the embeds
 #   token_id = string_to_token_dict[token]
   
+clpTextG = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
+clpText.eval()
+clpText.cuda()
 
 class StableDiffusionAITPipeline(StableDiffusionPipeline):
     r"""
@@ -324,18 +327,22 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         text_input = text_input.to(self.device)
         # text_embeddings2 = self.clip_inference(text_input["input_ids"],64)
         # clpModel = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
-        clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")                
+        
 
 
         
         
         if ckpt_path is not None:
+            clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
             ckpt = torch.load(ckpt_path, map_location='cpu')
             string_to_token_dict = ckpt["string_to_token"]
             string_to_param_dict = ckpt["string_to_param"]
             load_learned_embed_in_clip(string_to_param_dict, string_to_token_dict,clpText, self.device)
-        clpText.eval()
-        clpText.cuda()        
+            clpText.eval()
+            clpText.cuda()
+        else:
+            clpText = clpTextG
+        
         text_embeddings = clpText(text_input.input_ids)[0]
         bs_embed, seq_len, _ = text_embeddings.shape
         text_embeddings = text_embeddings.repeat(1, 1, 1)
