@@ -17,7 +17,7 @@ import torch
 
 from pipeline_stable_diffusion_ait import StableDiffusionAITPipeline
 
-from flask import Flask,request,send_file
+from flask import Flask,request,send_file,send_from_directory
 import os
 import sys
 
@@ -61,6 +61,11 @@ def rendermany():
         html += f"<img src='/?prompt={prompt}&steps={steps}&i={i}'></img>"
     html += "</h1></body></html>"
     return html
+
+# static files
+@app.route('/<path:path>')
+def send_js(path):
+    return send_from_directory('static2', path)
 if __name__ == '__main__':
     with torch.autocast("cuda"):
         image = pipe("warmup",512,512,2,7.5,0.0,None,None,'pil',True,None)
