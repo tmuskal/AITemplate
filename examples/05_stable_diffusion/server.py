@@ -42,8 +42,8 @@ def render():
             if(vocab == ""):
                 vocab = None
             with torch.autocast("cuda"):
-                images = pipe([prompt,prompt],512,512,50,10,0.0,None,None,'pil',True,vocab)
-            image = images[1]
+                images = pipe(prompt,512,512,50,10,0.0,None,None,'pil',True,vocab)
+            image = images[0]
             image.save("/tmp/example_ait.png")
             return send_file("/tmp/example_ait.png", mimetype='image/png')            
         finally:
