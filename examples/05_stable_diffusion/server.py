@@ -31,23 +31,26 @@ pipe = StableDiffusionAITPipeline.from_pretrained(
 app = Flask(__name__)
 import threading
 import time
+from io import StringIO
 sem = threading.Semaphore()
-
+    
 @app.route("/")
-def render():
+def render():        
+        vocab = ""
+        prompt = request.args.get('prompt', '')        
+        steps = int(request.args.get('steps', "50"))        
+        if(vocab == ""):
+            vocab = None
         sem.acquire()
         try:
-            vocab = ""
-            prompt = request.args.get('prompt', '')        
-            steps = int(request.args.get('steps', "50"))
-            if(vocab == ""):
-                vocab = None
             with torch.autocast("cuda"):
                 image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab).images[0]
-            image.save("/tmp/example_ait.png")
-            return send_file("/tmp/example_ait.png", mimetype='image/png')            
         finally:
             sem.release()
+        img_io = StringIO()
+        image.save(img_io)
+        img_io.seek(0)
+        return send_file(img_io, mimetype='image/png')            
 
 @app.route("/rendermany")
 def rendermany():
@@ -60,4 +63,6 @@ def rendermany():
     html += "</h1></body></html>"
     return html
 if __name__ == '__main__':
+    with torch.autocast("cuda"):
+        image = pipe("warmup",512,512,2,7.5,0.0,None,None,'pil',True,None)
     app.run(host='0.0.0.0', port=5000, debug=True)
