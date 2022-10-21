@@ -25,14 +25,14 @@ RUN pip3 install dist/*.whl --force-reinstall
 RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 RUN pip3 install diffusers transformers click einops
 
-
 WORKDIR /app/AITemplate
 ENV TORCH_CUDA_ARCH_LIST=Turing
 ARG ACCESS_TOKEN=none
 RUN python3 examples/05_stable_diffusion/compile.py --token $ACCESS_TOKEN
 
 RUN python3 examples/05_stable_diffusion/demo.py --token $ACCESS_TOKEN --prompt "Mountain Rainier in van Gogh's world"
-ENTRYPOINT ["python3", "examples/05_stable_diffusion/demo.py", "--token", "$ACCESS_TOKEN"] 
-CMD "Mountain Rainier in van Gogh's world"
+RUN pip3 install Flask
+
+ENTRYPOINT ["python3", "examples/05_stable_diffusion/server.py", "--token", "$ACCESS_TOKEN"] 
 
 
