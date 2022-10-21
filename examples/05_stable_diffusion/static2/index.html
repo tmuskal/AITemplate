@@ -12,7 +12,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
     <script>
         var defaultPrompt = "The quick brown fox jumps over the lazy dog.";
+        // override default prompt with URL parameter
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('prompt')) {
+            defaultPrompt = urlParams.get('prompt');
+        }
         $("#prompt").val(defaultPrompt);
+
         var onClickFn =function() {
             var prompt = $('#prompt').val();
             $('#output').html('');
