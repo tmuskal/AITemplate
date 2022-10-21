@@ -39,10 +39,11 @@ def render():
         try:
             vocab = ""
             prompt = request.args.get('prompt', '')        
+            steps = int(request.args.get('steps', "50"))
             if(vocab == ""):
                 vocab = None
             with torch.autocast("cuda"):
-                image = pipe(prompt,512,512,50,7.5,0.0,None,None,'pil',True,vocab).images[0]
+                image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab).images[0]
             image.save("/tmp/example_ait.png")
             return send_file("/tmp/example_ait.png", mimetype='image/png')            
         finally:
