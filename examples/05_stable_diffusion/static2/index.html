@@ -22,7 +22,7 @@
         var onClickFn =function() {
             var prompt = $('#prompt').val();
             $('#output').html('');
-            var iframeHref = '/rendermany?prompt=' + encodeURIComponent(prompt) + '&n=3';
+            var iframeHref = '/rendermany?prompt=' + encodeURIComponent(prompt) + '&n=6&steps=25';
             $('#output').append('<iframe src="' + iframeHref + '" width="100%" height="1000px"></iframe>');
         }
         $('#generate').click(onClickFn);
