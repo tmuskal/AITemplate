@@ -15,6 +15,7 @@ RUN  apt-get update && apt-get install -y --no-install-recommends \
     python3-wheel \
     wget \
     && rm -rf /var/lib/apt/lists/*
+
 RUN git clone --recursive https://github.com/tmuskal/AITemplate
 
 WORKDIR /app/AITemplate/python
@@ -32,7 +33,7 @@ RUN python3 examples/05_stable_diffusion/compile.py --token $ACCESS_TOKEN
 
 RUN python3 examples/05_stable_diffusion/demo.py --token $ACCESS_TOKEN --prompt "Mountain Rainier in van Gogh's world"
 RUN pip3 install Flask
-
+RUN git pull
 ENTRYPOINT ["python3", "examples/05_stable_diffusion/server.py", "--token", "$ACCESS_TOKEN"] 
 
 
