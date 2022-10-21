@@ -33,7 +33,7 @@ RUN python3 examples/05_stable_diffusion/compile.py --token $ACCESS_TOKEN
 
 
 # python3 examples/05_stable_diffusion/demo.py --token $ACCESS_TOKEN --prompt "Mountain Rainier in van Gogh's world"
-ENTRYPOINT python3 examples/05_stable_diffusion/demo.py --token $ACCESS_TOKEN --prompt 
+ENTRYPOINT ["python3", "examples/05_stable_diffusion/demo.py", "--token", "$ACCESS_TOKEN"] 
 CMD "Mountain Rainier in van Gogh's world"
 
 
