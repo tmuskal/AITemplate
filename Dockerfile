@@ -37,6 +37,7 @@ RUN pip3 install Flask
 ENV ACCESS_TOKEN=$ACCESS_TOKEN
 ADD . /app2/
 RUN git pull
+EXPOSE 5000
 ENTRYPOINT ["python3", "examples/05_stable_diffusion/server.py"] 
 
 
