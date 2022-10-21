@@ -55,7 +55,7 @@ def rendermany():
     prompt = request.args.get('prompt', '')
     steps = int(request.args.get('steps', "50"))
     for i in range(100):
-        html += f"<img src='/?prompt={prompt}&steps={steps}'></img>"
+        html += f"<img src='/?prompt={prompt}&steps={steps}&i={i}'></img>"
     html += "</h1></body></html>"
     return html
 if __name__ == '__main__':
