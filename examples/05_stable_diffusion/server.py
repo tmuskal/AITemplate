@@ -48,5 +48,13 @@ def render():
         finally:
             sem.release()
 
+@app.route("/rendermany")
+def rendermany():
+    html = "<html><body><h1>"
+    prompt = request.args.get('prompt', '')
+    for i in range(100):
+        html += f"<img src='/render?prompt={prompt}'></img>"
+    html += "</h1></body></html>"
+    return html
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
