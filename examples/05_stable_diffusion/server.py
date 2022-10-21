@@ -18,7 +18,7 @@ import torch
 from aitemplate.testing.benchmark_pt import benchmark_torch_function
 from pipeline_stable_diffusion_ait import StableDiffusionAITPipeline
 
-from flask import Flask,request,send_file
+from flask import Flask,request,send_file,create_app
 import os
 import sys
 
@@ -47,3 +47,6 @@ def render():
             send_file("example_ait.png", mimetype='image/png')            
         finally:
             sem.release()
+
+if __name__ == '__main__':
+    create_app().run(host='0.0.0.0', port=5000, debug=True)
