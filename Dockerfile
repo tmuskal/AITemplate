@@ -34,7 +34,7 @@ RUN python3 examples/05_stable_diffusion/compile.py --token $ACCESS_TOKEN
 
 RUN python3 examples/05_stable_diffusion/demo.py --token $ACCESS_TOKEN --prompt "Mountain Rainier in van Gogh's world"
 RUN pip3 install Flask
-ENV ACCESS_TOKEN=$ACCESS_TOKEN
+ENV HF_TOKEN=$ACCESS_TOKEN
 ADD . /app2/
 RUN git pull
 EXPOSE 5000
