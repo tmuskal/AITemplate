@@ -43,8 +43,8 @@ def render():
                 vocab = None
             with torch.autocast("cuda"):
                 image = pipe(prompt,512,512,50,10,0.0,None,None,'pil',True,vocab).images[0]
-            image.save("example_ait.png")
-            send_file("example_ait.png", mimetype='image/png')            
+            image.save("/tmp/example_ait.png")
+            send_file("/tmp/example_ait.png", mimetype='image/png')            
         finally:
             sem.release()
 
