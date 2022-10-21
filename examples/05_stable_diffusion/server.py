@@ -15,7 +15,6 @@
 import click
 import torch
 
-from aitemplate.testing.benchmark_pt import benchmark_torch_function
 from pipeline_stable_diffusion_ait import StableDiffusionAITPipeline
 
 from flask import Flask,request,send_file
@@ -31,7 +30,7 @@ pipe = StableDiffusionAITPipeline.from_pretrained(
 app = Flask(__name__)
 import threading
 import time
-from io import StringIO
+from io import StringIO,BytesIO
 sem = threading.Semaphore()
     
 @app.route("/")
@@ -47,10 +46,10 @@ def render():
                 image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab).images[0]
         finally:
             sem.release()
-        img_io = StringIO()
+        img_io = BytesIO()
         image.save(img_io, 'JPEG', quality=90)
         img_io.seek(0)
-        return send_file(img_io, mimetype='image/png')            
+        return send_file(img_io, mimetype='image/jpeg')
 
 @app.route("/rendermany")
 def rendermany():
