@@ -112,8 +112,8 @@ def load_learned_embed_in_clip(string_to_params_dict, string_to_token_dict, text
 #   token_id = string_to_token_dict[token]
   
 clpTextG = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
-clpText.eval()
-clpText.cuda()
+clpTextG.eval()
+clpTextG.cuda()
 
 class StableDiffusionAITPipeline(StableDiffusionPipeline):
     r"""
