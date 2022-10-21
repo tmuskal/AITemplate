@@ -48,7 +48,7 @@ def render():
         finally:
             sem.release()
         img_io = StringIO()
-        image.save(img_io)
+        image.save(img_io, 'JPEG', quality=90)
         img_io.seek(0)
         return send_file(img_io, mimetype='image/png')            
 
