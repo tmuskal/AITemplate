@@ -34,8 +34,8 @@ RUN python3 examples/05_stable_diffusion/compile.py --token $ACCESS_TOKEN
 
 RUN python3 examples/05_stable_diffusion/demo.py --token $ACCESS_TOKEN --prompt "Mountain Rainier in van Gogh's world"
 RUN pip3 install Flask
-RUN git pull
 ENV ACCESS_TOKEN=$ACCESS_TOKEN
+RUN git pull
 ENTRYPOINT ["python3", "examples/05_stable_diffusion/server.py"] 
 
 
