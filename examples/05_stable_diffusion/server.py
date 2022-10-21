@@ -18,7 +18,7 @@ import torch
 from aitemplate.testing.benchmark_pt import benchmark_torch_function
 from pipeline_stable_diffusion_ait import StableDiffusionAITPipeline
 
-from flask import Flask,request,send_file,create_app
+from flask import Flask,request,send_file
 import os
 import sys
 
