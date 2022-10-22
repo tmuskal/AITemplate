@@ -10,12 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
 
     <script>
-        var defaultPrompt = "photo of a unicorn";
         // override default prompt with URL parameter
         var urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('prompt')) {
-            defaultPrompt = urlParams.get('prompt');
-        }
         var n = 3;
         if (urlParams.has('n')) {
             n = urlParams.get('n');
@@ -24,7 +20,7 @@
         if (urlParams.has('steps')) {
             steps = urlParams.get('steps');
         }
-        var strength = 0.3;
+        var strength = 0.6;
         if (urlParams.has('strength')) {
             strength = urlParams.get('strength');
         }
@@ -57,20 +53,30 @@
             var urlParams2 = new URLSearchParams(url.split('?')[1]);
             var prompt = $('#prompt').val();
             var newsteps = parseInt(urlParams2.get('steps'));
+            var newstrength = parseInt(urlParams2.get('strength'));
             var newseed = parseInt(urlParams2.get('seed'));
             var oldprompt = urlParams2.get('prompt');
-            if(oldprompt == prompt){                
-                newsteps = newsteps * factor;                
+            if(oldprompt == prompt){ 
+                newsteps = newsteps * factor;
                 newsteps = Math.round(newsteps);
                 newsteps = Math.max(newsteps, 1);
                 newsteps = Math.min(newsteps, 200);
+                newstrength = newstrength * 0.8;
+            }
+            else{
+                newstrength = strength;
+                newsteps = steps; 
+                // newsteps = newsteps / factor;
+                // newsteps = Math.round(newsteps);
+                // newsteps = Math.max(newsteps, 1);
+                // newsteps = Math.min(newsteps, 200);
             }
 
 
             $('#output').html('');
             for(var i = 0; i < n; i++){
                 var img = $('<img>');
-                var newHref = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+newsteps+'&seed='+(newseed+i+1)+"&strength="+strength + "&origImage=" + encodeURIComponent(url);
+                var newHref = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+newsteps+'&seed='+(newseed+i+1)+"&strength="+newstrength + "&origImage=" + encodeURIComponent(url);
                 img.attr('src', newHref);
                 img.click(imageClick);
                 $('#output').append(img);
