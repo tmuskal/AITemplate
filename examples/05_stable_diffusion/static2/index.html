@@ -23,17 +23,22 @@
         if (urlParams.has('n')) {
             n = urlParams.get('n');
         }
-        var steps = 25;
+        var steps = 15;
         if (urlParams.has('steps')) {
             steps = urlParams.get('steps');
         }
-        var strength = 0.8;
+        var strength = 0.3;
         if (urlParams.has('strength')) {
             strength = urlParams.get('strength');
         }
         var seed = 1512;
         if (urlParams.has('seed')) {
             seed = urlParams.get('seed');
+        }
+        var factor = 1.3;
+        if (urlParams.has('factor')) {
+            factor = urlParams.get('factor');
+            factor = parseFloat(factor);
         }
         
         var onGenerateClickFn =function() {
@@ -53,14 +58,20 @@
             var url = theimg.attr('src');
             var urlParams2 = new URLSearchParams(url);
             var prompt = $('#prompt').val();
-            var steps = urlParams2.get('steps') * 2;
+            var newsteps = urlParams2.get('steps');
             var newseed = urlParams2.get('seed');
-            if(steps > 200)
-                steps = 200;
+            var oldprompt = urlParams2.get('prompt');
+            if(oldprompt == prompt){                
+                newsteps = steps * factor;                
+                newsteps = Math.round(newsteps);
+                newsteps = Math.max(newsteps, 1);
+                newsteps = Math.min(newsteps, 200);
+            }
+
             $('#output').html('');
             for(var i = 0; i < n; i++){
                 var img = $('<img>');
-                var newHref = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+steps+'&seed='+(newseed+i)+"&origImage=" + encodeURIComponent(url);
+                var newHref = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+newsteps+'&seed='+(newseed+i)+"&origImage=" + encodeURIComponent(url);
                 img.attr('src', newHref);
                 img.click(imageClick);
                 $('#output').append(img);
