@@ -18,6 +18,15 @@ import torch
 from pipeline_stable_diffusion_ait import StableDiffusionAITPipeline
 
 from flask import Flask,request,send_file,send_from_directory
+from flask_caching import Cache
+
+config = {
+    "DEBUG": True,          # some Flask specific configs
+    "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
+    "CACHE_DEFAULT_TIMEOUT": 300
+}
+
+
 import os
 import sys
 import PIL
@@ -28,12 +37,18 @@ pipe = StableDiffusionAITPipeline.from_pretrained(
             use_auth_token=os.environ['HF_TOKEN'],
         ).to("cuda")
 app = Flask(__name__)
+app.config.from_mapping(config)
+cache = Cache(app)
+
+
+
 import threading
 import time
 from io import StringIO,BytesIO
 sem = threading.Semaphore()
     
 @app.route("/")
+@cache.cached()
 def render():        
         vocab = ""
         prompt = request.args.get('prompt', '')
@@ -65,34 +80,12 @@ def render():
         img_io.seek(0)
         return send_file(img_io, mimetype='image/jpeg')
 
-
-@app.route("/rendermany")
-def rendermany():
-    html = "<html><body>"    
-    prompt = request.args.get('prompt', '')
-    steps = int(request.args.get('steps', "50"))
-    seed = int(request.args.get('seed', "1"))
-    init_image_seed = int(request.args.get('init_image_seed', "0"))
-    strength = float(request.args.get('strength', "0.8"))
-    n = int(request.args.get('n', "3"))
-    scriptStr = f"function onImageClick(e){{var img = e.target;var seed = img.getAttribute('seed');window.location.href = '/rendermany?seed=' + seed + '&init_image_seed=' + seed + '&strength={strength}&prompt={prompt}&steps={steps}&n={n}';}}"
-    scriptStr = f"<script>{scriptStr}</script>"
-    html += scriptStr
-
-    
-    steps = int(request.args.get('steps', "50"))
-    for i in range(n):
-        if(init_image_seed != 0):
-            html += f"<img src='/?prompt={prompt}&steps={steps}&seed={seed+i}&strength={strength}&init_image_seed={init_image_seed}' seed='{seed + i}'></img>"
-        else:
-            html += f"<img src='/?prompt={prompt}&steps={steps}&seed={seed+i}' seed='{seed + i}' onclick='onImageClick(event)'></img>"
-    html += "</body></html>"
-    return html
-
 # static files
 @app.route('/<path:path>')
 def send_js(path):
     return send_from_directory('static2', path)
+
+
 if __name__ == '__main__':
     with torch.autocast("cuda"):
         image = pipe("warmup",512,512,2,7.5,0.0,None,None,'pil',True,None)

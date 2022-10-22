@@ -33,7 +33,7 @@ ARG ACCESS_TOKEN=none
 RUN python3 examples/05_stable_diffusion/compile.py --token $ACCESS_TOKEN
 
 RUN python3 examples/05_stable_diffusion/demo.py --token $ACCESS_TOKEN --prompt "Mountain Rainier in van Gogh's world"
-RUN pip3 install Flask
+RUN pip3 install Flask Flask-Caching
 ENV HF_TOKEN=$ACCESS_TOKEN
 ADD . /app2/
 RUN git pull
