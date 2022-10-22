@@ -20,7 +20,7 @@ from pipeline_stable_diffusion_ait import StableDiffusionAITPipeline
 from flask import Flask,request,send_file,send_from_directory
 import os
 import sys
-
+import PIL
 pipe = StableDiffusionAITPipeline.from_pretrained(
             "CompVis/stable-diffusion-v1-4",
             revision="fp16",
@@ -36,7 +36,7 @@ sem = threading.Semaphore()
 @app.route("/")
 def render():        
         vocab = ""
-        prompt = request.args.get('prompt', '')        
+        prompt = request.args.get('prompt', '')
         steps = int(request.args.get('steps', "50"))
         strength = float(request.args.get('strength', "0.8"))
         seed = int(request.args.get('seed', "0"))
@@ -50,7 +50,8 @@ def render():
         if(origImage != ""):
             url = 'http://127.0.0.1:5000' + origImage
             init_image_data = app.test_client().get(url).data
-            init_image = BytesIO(init_image_data)
+            init_image_data = BytesIO(init_image_data)
+            init_image = PIL.Image.open(init_image_data)            
         sem.acquire()
         try:
             with torch.autocast("cuda"):                
