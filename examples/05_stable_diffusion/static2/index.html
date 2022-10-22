@@ -34,6 +34,7 @@
         var seed = 1512;
         if (urlParams.has('seed')) {
             seed = urlParams.get('seed');
+            seed = parseInt(seed);
         }
         var factor = 1.3;
         if (urlParams.has('factor')) {
