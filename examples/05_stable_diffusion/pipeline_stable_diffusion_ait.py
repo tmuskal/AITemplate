@@ -464,8 +464,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         else:
             latents = latents.to(self.device)
 
-        if accepts_eta:
-            extra_step_kwargs["eta"] = eta
+
 
         # if we use LMSDiscreteScheduler, let's make sure latents are multiplied by sigmas
         if isinstance(self.scheduler, LMSDiscreteScheduler):
@@ -479,7 +478,8 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             inspect.signature(self.scheduler.step).parameters.keys()
         )
         extra_step_kwargs = {}
-
+        if accepts_eta:
+            extra_step_kwargs["eta"] = eta
         t_start = max(num_inference_steps - init_timestep + offset, 0)
         for i, t in enumerate(self.progress_bar(self.scheduler.timesteps[t_start:])):
             t_index = t_start + i
