@@ -58,7 +58,7 @@
             var urlParams2 = new URLSearchParams(url.split('?')[1]);
             var prompt = $('#prompt').val();
             var newsteps = parseInt(urlParams2.get('steps'));
-            var newstrength = parseInt(urlParams2.get('strength'));
+            var newstrength = parseFloat(urlParams2.get('strength'));
             var newseed = parseInt(urlParams2.get('seed'));
             var oldprompt = urlParams2.get('prompt');
             if(oldprompt == prompt){ 
