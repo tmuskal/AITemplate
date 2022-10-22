@@ -48,7 +48,7 @@
             
             for (var i = 0; i < n; i++) {
                 var img = $('<img>');
-                var Href = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+steps+'&seed=' + (seed + i);
+                var Href = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+steps+'&seed=' + (seed + i+1);
                 img.attr('src', Href);
                 img.click(imageClick);
                 $('#output').append(img);
@@ -73,7 +73,7 @@
             $('#output').html('');
             for(var i = 0; i < n; i++){
                 var img = $('<img>');
-                var newHref = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+newsteps+'&seed='+(newseed+i)+"&strength="+strength + "&origImage=" + encodeURIComponent(url);
+                var newHref = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+newsteps+'&seed='+(newseed+i+1)+"&strength="+strength + "&origImage=" + encodeURIComponent(url);
                 img.attr('src', newHref);
                 img.click(imageClick);
                 $('#output').append(img);
