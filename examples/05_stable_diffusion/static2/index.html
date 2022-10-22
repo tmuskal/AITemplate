@@ -31,10 +31,15 @@
         if (urlParams.has('strength')) {
             strength = urlParams.get('strength');
         }
+        var seed = 1512;
+        if (urlParams.has('seed')) {
+            seed = urlParams.get('seed');
+        }
+
         var onClickFn =function() {
             var prompt = $('#prompt').val();
             $('#output').html('');
-            var iframeHref = '/rendermany?prompt=' + encodeURIComponent(prompt) + '&n='+n+'&steps='+steps+'&strength='+strength;
+            var iframeHref = '/rendermany?prompt=' + encodeURIComponent(prompt) + '&n='+n+'&steps='+steps+'&strength='+strength + '&seed=' + seed;
             $('#output').append('<iframe src="' + iframeHref + '" width="100%" height="1000px"></iframe>');
         }
         $('#generate').click(onClickFn);
