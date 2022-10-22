@@ -68,9 +68,12 @@ def render():
             url = 'http://127.0.0.1:5000' + origImage
             init_image_data = app.test_client().get(url).data
             init_image_data = BytesIO(init_image_data)
-            init_image = PIL.Image.open(init_image_data)            
+            init_image = PIL.Image.open(init_image_data)
         sem.acquire()
-        try:
+        try:            
+            cached = cache.get(cacheKey)
+            if(cached is not None):
+                return send_file(BytesIO(cached),mimetype='image/png')
             with torch.autocast("cuda"):                
                 if(init_image == None):
                     strength = 0.0
