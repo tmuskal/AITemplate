@@ -432,7 +432,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
 
         self.scheduler.set_timesteps(num_inference_steps, **extra_set_kwargs)
 
-        init_timestep = 0
+        init_timestep = num_inference_steps
         if(init_image != None):
             init_image = preprocess(init_image)
 
