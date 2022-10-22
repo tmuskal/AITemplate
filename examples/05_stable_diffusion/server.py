@@ -42,18 +42,19 @@ def render():
         seed = int(request.args.get('seed', "0"))
         if(seed == 0):
             seed = None        
-        init_image_seed = int(request.args.get('init_image_seed', "0"))        
+        origImage = request.args.get('origImage', "")
         
         if(vocab == ""):
             vocab = None
+        init_image = None
+        if(origImage != ""):
+            url = 'http://127.0.0.1:5000' + origImage
+            init_image_data = app.test_client().get(url).data
+            init_image = BytesIO(init_image_data)
         sem.acquire()
         try:
-            with torch.autocast("cuda"):
-                init_image = None
-                if(init_image_seed != 0):
-                    init_image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab,0.0,None,init_image_seed).images[0]                
-                    steps = steps * 4
-                else:
+            with torch.autocast("cuda"):                
+                if(init_image == None):
                     strength = 0.0
                 image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab,strength,init_image,seed).images[0]
         finally:
@@ -94,4 +95,4 @@ def send_js(path):
 if __name__ == '__main__':
     with torch.autocast("cuda"):
         image = pipe("warmup",512,512,2,7.5,0.0,None,None,'pil',True,None)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True,threaded=True)
