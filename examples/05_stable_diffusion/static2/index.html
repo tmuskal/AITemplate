@@ -56,8 +56,8 @@
         }
         var imageClick = function(){
             theimg = $(this);
-            var url = theimg.attr('src');
-            var urlParams2 = new URLSearchParams(url);
+            var url = theimg.attr('src');            
+            var urlParams2 = new URLSearchParams(url.split('?')[1]);
             var prompt = $('#prompt').val();
             var newsteps = parseInt(urlParams2.get('steps'));
             var newseed = parseInt(urlParams2.get('seed'));
