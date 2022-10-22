@@ -47,7 +47,7 @@
             
             for (var i = 0; i < n; i++) {
                 var img = $('<img>');
-                var Href = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+steps+'&seed=' + (seed + i+1);
+                var Href = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+steps+'&seed=' + (seed + i+1) + '&strength=' + strength ;
                 img.attr('src', Href);
                 img.click(imageClick);
                 $('#output').append(img);
