@@ -34,6 +34,11 @@
             factor = urlParams.get('factor');
             factor = parseFloat(factor);
         }
+        var strengthfactor = 0.9;
+        if (urlParams.has('strengthfactor')) {
+            strengthfactor = urlParams.get('strengthfactor');
+            strengthfactor = parseFloat(strengthfactor);
+        }
         
         var onGenerateClickFn =function() {
             var prompt = $('#prompt').val();
@@ -61,15 +66,34 @@
                 newsteps = Math.round(newsteps);
                 newsteps = Math.max(newsteps, 1);
                 newsteps = Math.min(newsteps, 200);
-                newstrength = newstrength * 0.8;
+                newstrength = newstrength * strengthfactor;
             }
             else{
-                newstrength = strength;
-                newsteps = steps; 
-                // newsteps = newsteps / factor;
-                // newsteps = Math.round(newsteps);
-                // newsteps = Math.max(newsteps, 1);
-                // newsteps = Math.min(newsteps, 200);
+                const newPromptMode = 'normal';
+                if(urlParams.has('newPromptMode')) {
+                    newPromptMode = urlParams.get('newPromptMode');
+                }
+                if(newPromptMode == 'decrease'){
+                    newsteps = newsteps / factor;
+                    newsteps = Math.round(newsteps);
+                    newsteps = Math.max(newsteps, 1);
+                    newsteps = Math.min(newsteps, 200);
+                    newstrength = newstrength / strengthfactor;
+                }
+                else if(newPromptMode == 'random'){
+                    newsteps = Math.round(Math.random() * 200);
+                    newsteps = Math.max(newsteps, 1);
+                    newsteps = Math.min(newsteps, 200);
+                    newstrength = Math.random();
+                }
+                else if(newPromptMode == 'keep'){
+                    newsteps = newsteps;
+                    newstrength = newstrength;
+                }
+                else{
+                    newsteps = steps;
+                    newstrength = strength;
+                }                
             }
 
 
