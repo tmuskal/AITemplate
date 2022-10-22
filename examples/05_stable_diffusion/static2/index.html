@@ -59,8 +59,8 @@
             var url = theimg.attr('src');
             var urlParams2 = new URLSearchParams(url);
             var prompt = $('#prompt').val();
-            var newsteps = urlParams2.get('steps');
-            var newseed = urlParams2.get('seed');
+            var newsteps = parseInt(urlParams2.get('steps'));
+            var newseed = parseInt(urlParams2.get('seed'));
             var oldprompt = urlParams2.get('prompt');
             if(oldprompt == prompt){                
                 newsteps = steps * factor;                
@@ -68,6 +68,7 @@
                 newsteps = Math.max(newsteps, 1);
                 newsteps = Math.min(newsteps, 200);
             }
+
 
             $('#output').html('');
             for(var i = 0; i < n; i++){
