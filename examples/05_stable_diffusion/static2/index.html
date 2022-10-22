@@ -14,7 +14,7 @@
         var urlParams = new URLSearchParams(window.location.search);
         var n = 3;
         if (urlParams.has('n')) {
-            n = urlParams.get('n');
+            n = parseInt(urlParams.get('n'));
         }
         var steps = 15;
         if (urlParams.has('steps')) {
