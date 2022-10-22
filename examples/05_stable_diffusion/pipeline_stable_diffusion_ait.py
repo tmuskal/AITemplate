@@ -419,13 +419,19 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
                 raise ValueError(
                     f"Unexpected latents shape, got {latents.shape}, expected {latents_shape}"
                 )
+
+        # set timesteps
+        accepts_offset = "offset" in set(
+            inspect.signature(self.scheduler.set_timesteps).parameters.keys()
+        )
         extra_set_kwargs = {}
         offset = 0
         if accepts_offset:
             offset = 1
             extra_set_kwargs["offset"] = 1
 
-        latents = latents.to(self.device)
+        self.scheduler.set_timesteps(num_inference_steps, **extra_set_kwargs)
+
         init_timestep = 0
         if(init_image != None):
             init_image = preprocess(init_image)
@@ -455,15 +461,11 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             noise = torch.randn(init_latents.shape, generator=generator, device=self.device)
             init_latents = self.scheduler.add_noise(init_latents, noise, timesteps).to(self.device)
             latents = init_latents
+        else:
+            latents = latents.to(self.device)
 
-
-        # set timesteps
-        accepts_offset = "offset" in set(
-            inspect.signature(self.scheduler.set_timesteps).parameters.keys()
-        )
         if accepts_eta:
             extra_step_kwargs["eta"] = eta
-        self.scheduler.set_timesteps(num_inference_steps, **extra_set_kwargs)
 
         # if we use LMSDiscreteScheduler, let's make sure latents are multiplied by sigmas
         if isinstance(self.scheduler, LMSDiscreteScheduler):
