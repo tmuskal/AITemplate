@@ -73,7 +73,7 @@
             $('#output').html('');
             for(var i = 0; i < n; i++){
                 var img = $('<img>');
-                var newHref = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+newsteps+'&seed='+(newseed+i)+"&origImage=" + encodeURIComponent(url);
+                var newHref = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+newsteps+'&seed='+(newseed+i)+"&strength="+strength + "&origImage=" + encodeURIComponent(url);
                 img.attr('src', newHref);
                 img.click(imageClick);
                 $('#output').append(img);
