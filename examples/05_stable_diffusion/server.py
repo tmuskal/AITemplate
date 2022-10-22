@@ -52,9 +52,9 @@ def render():
                 init_image = None
                 if(init_image_seed != 0):
                     init_image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab,0.0,None,init_image_seed).images[0]                
+                    steps = steps * 4
                 else:
                     strength = 0.0
-                    steps = steps * 4
                 image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab,strength,init_image,seed).images[0]
         finally:
             sem.release()
