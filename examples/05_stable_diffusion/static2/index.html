@@ -19,6 +19,7 @@
         var steps = 15;
         if (urlParams.has('steps')) {
             steps = urlParams.get('steps');
+            steps = parseInt(steps);
         }
         var strength = 0.6;
         if (urlParams.has('strength')) {
