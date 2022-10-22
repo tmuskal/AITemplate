@@ -73,7 +73,7 @@ def rendermany():
     init_image_seed = int(request.args.get('init_image_seed', "0"))
     strength = float(request.args.get('strength', "0.8"))
     n = int(request.args.get('n', "3"))
-    scriptStr = f"function onImageClick(e){{var img = e.target;var seed = img.getAttribute('seed');window.location.href = '/rendermany?seed="+seed+"&init_image_seed=' + seed + '&strength={strength}&prompt={prompt}&steps={steps}&n={n}';}}"
+    scriptStr = f"function onImageClick(e){{var img = e.target;var seed = img.getAttribute('seed');window.location.href = '/rendermany?seed="+str(seed)+"&init_image_seed=' + seed + '&strength={strength}&prompt={prompt}&steps={steps}&n={n}';}}"
     scriptStr = f"<script>{scriptStr}</script>"
     html += scriptStr
 
