@@ -12,7 +12,7 @@
     <script>
         // override default prompt with URL parameter
         var urlParams = new URLSearchParams(window.location.search);
-        var n = 3;
+        var n = 8;
         if (urlParams.has('n')) {
             n = parseInt(urlParams.get('n'));
         }
@@ -21,7 +21,7 @@
             steps = urlParams.get('steps');
             steps = parseInt(steps);
         }
-        var strength = 0.6;
+        var strength = 0.8;
         if (urlParams.has('strength')) {
             strength = parseFloat(urlParams.get('strength'));
         }
