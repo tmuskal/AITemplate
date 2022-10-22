@@ -419,6 +419,12 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
                 raise ValueError(
                     f"Unexpected latents shape, got {latents.shape}, expected {latents_shape}"
                 )
+        extra_set_kwargs = {}
+        offset = 0
+        if accepts_offset:
+            offset = 1
+            extra_set_kwargs["offset"] = 1
+
         latents = latents.to(self.device)
         init_timestep = 0
         if(init_image is not None):        
@@ -455,11 +461,6 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         accepts_offset = "offset" in set(
             inspect.signature(self.scheduler.set_timesteps).parameters.keys()
         )
-        extra_set_kwargs = {}
-        offset = 0
-        if accepts_offset:
-            offset = 1
-            extra_set_kwargs["offset"] = 1
 
         self.scheduler.set_timesteps(num_inference_steps, **extra_set_kwargs)
 
