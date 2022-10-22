@@ -22,7 +22,7 @@
         }
         var strength = 0.6;
         if (urlParams.has('strength')) {
-            strength = urlParams.get('strength');
+            strength = parseFloat(urlParams.get('strength'));
         }
         var seed = 1512;
         if (urlParams.has('seed')) {
