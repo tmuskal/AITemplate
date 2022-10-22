@@ -427,7 +427,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
 
         latents = latents.to(self.device)
         init_timestep = 0
-        if(init_image is not None):        
+        if(init_image != None):
             init_image = preprocess(init_image)
 
             # encode the init image into latents and scale the latents
@@ -461,10 +461,9 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         accepts_offset = "offset" in set(
             inspect.signature(self.scheduler.set_timesteps).parameters.keys()
         )
-
+        if accepts_eta:
+            extra_step_kwargs["eta"] = eta
         self.scheduler.set_timesteps(num_inference_steps, **extra_set_kwargs)
-
-        
 
         # if we use LMSDiscreteScheduler, let's make sure latents are multiplied by sigmas
         if isinstance(self.scheduler, LMSDiscreteScheduler):
@@ -478,8 +477,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             inspect.signature(self.scheduler.step).parameters.keys()
         )
         extra_step_kwargs = {}
-        if accepts_eta:
-            extra_step_kwargs["eta"] = eta
+
         t_start = max(num_inference_steps - init_timestep + offset, 0)
         for i, t in enumerate(self.progress_bar(self.scheduler.timesteps[t_start:])):
             t_index = t_start + i
@@ -510,7 +508,7 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
             # compute the previous noisy sample x_t -> x_t-1
             if isinstance(self.scheduler, LMSDiscreteScheduler):
                 latents = self.scheduler.step(
-                    noise_pred, i, latents, **extra_step_kwargs
+                    noise_pred, t_index, latents, **extra_step_kwargs
                 ).prev_sample
             else:
                 latents = self.scheduler.step(
