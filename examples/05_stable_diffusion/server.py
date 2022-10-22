@@ -42,7 +42,7 @@ def render():
         seed = int(request.args.get('seed', "0"))
         if(seed == 0):
             seed = None        
-        init_image_seed = int(request.args.get('init_image_seed', "0"))        
+        init_image_seed = int(request.args.get('init_image_seed', "0"))                
         
         if(vocab == ""):
             vocab = None
@@ -52,7 +52,9 @@ def render():
                 init_image = None
                 if(init_image_seed != 0):
                     init_image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab,0.0,None,init_image_seed).images[0]                
-                image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab,strength,init_image).images[0]
+                else:
+                    strength = 0.0
+                image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab,strength,init_image,seed).images[0]
         finally:
             sem.release()
         img_io = BytesIO()
@@ -68,7 +70,7 @@ def rendermany():
     steps = int(request.args.get('steps', "50"))
     seed = int(request.args.get('seed', "0"))
     init_image_seed = int(request.args.get('init_image_seed', "0"))
-    scriptStr = "function onImageClick(e){var img = e.target;var seed = img.getAttribute('seed');window.location.href = '/rendermany&init_image_seed=' + seed + '&prompt="+prompt+"&steps="+str(steps)+"&seed="+str(seed)+"';}"
+    scriptStr = "function onImageClick(e){var img = e.target;var seed = img.getAttribute('seed');window.location.href = '/rendermany?init_image_seed=' + seed + '&prompt="+prompt+"&steps="+str(steps)+"&seed="+str(seed)+"';}"
     scriptStr = f"<script>{scriptStr}</script>"
     html += scriptStr
 
