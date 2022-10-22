@@ -68,15 +68,21 @@ def rendermany():
     html = "<html><body>"    
     prompt = request.args.get('prompt', '')
     steps = int(request.args.get('steps', "50"))
-    seed = int(request.args.get('seed', "0"))
+    seed = int(request.args.get('seed', "1"))
     init_image_seed = int(request.args.get('init_image_seed', "0"))
-    scriptStr = "function onImageClick(e){var img = e.target;var seed = img.getAttribute('seed');window.location.href = '/rendermany?init_image_seed=' + seed + '&prompt="+prompt+"&steps="+str(steps)+"&seed="+str(seed)+"';}"
+    strength = float(request.args.get('strength', "0.8"))
+    n = int(request.args.get('n', "3"))
+    scriptStr = f"function onImageClick(e){{var img = e.target;var seed = img.getAttribute('seed');window.location.href = '/rendermany?init_image_seed=' + seed + '&strength={strength}prompt={prompt}&steps={steps*4}&seed={seed}n={n}';}}"
     scriptStr = f"<script>{scriptStr}</script>"
     html += scriptStr
 
-    n = int(request.args.get('n', "3"))
+    
+    steps = int(request.args.get('steps', "50"))
     for i in range(n):
-        html += f"<img src='/?prompt={prompt}&steps={steps}&i={i}&seed={seed+i}&init_image_seed={init_image_seed}' seed='{seed + i}' onclick='onImageClick(event)'></img>"
+        if(init_image_seed != 0):
+            html += f"<img src='/?prompt={prompt}&steps={steps}&seed={seed+i}&strength={strength}init_image_seed={init_image_seed}' seed='{seed + i}'></img>"
+        else:
+            html += f"<img src='/?prompt={prompt}&steps={steps}&seed={seed+i}' seed='{seed + i}' onclick='onImageClick(event)'></img>"
     html += "</body></html>"
     return html
 
