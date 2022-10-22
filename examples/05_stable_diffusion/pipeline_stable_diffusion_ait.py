@@ -13,14 +13,15 @@
 #  limitations under the License.
 #
 import inspect
-
+import random
 import os
 import warnings
 from typing import List, Optional, Union
 from einops import rearrange, repeat
 import torch
+import PIL
 from aitemplate.compiler import Model
-
+import numpy as np
 from diffusers import (
     AutoencoderKL,
     DDIMScheduler,
@@ -33,8 +34,7 @@ from diffusers.pipelines.stable_diffusion import (
     StableDiffusionPipelineOutput,
     StableDiffusionSafetyChecker,
 )
-
-from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer,CLIPTextModel, CLIPModel
+from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer,CLIPTextModel, set_seed
 
 PROGRESSIVE_SCALE = 2000
 def embed_inversion(
@@ -114,6 +114,17 @@ def load_learned_embed_in_clip(string_to_params_dict, string_to_token_dict, text
 clpTextG = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
 clpTextG.eval()
 clpTextG.cuda()
+
+def preprocess(image):
+    w, h = image.size
+    w, h = map(lambda x: x - x % 32, (w, h))  # resize to integer multiple of 32
+    image = image.resize((w, h), resample=PIL.Image.LANCZOS)
+    image = np.array(image).astype(np.float32) / 255.0
+    image = image[None].transpose(0, 3, 1, 2)
+    image = torch.from_numpy(image)
+    return 2.0 * image - 1.0
+
+
 
 class StableDiffusionAITPipeline(StableDiffusionPipeline):
     r"""
@@ -244,6 +255,9 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         output_type: Optional[str] = "pil",
         return_dict: bool = True,
         ckpt_path: Optional[str] = None,
+        strength: float = 0.8,
+        init_image: Union[PIL.Image.Image, None] = None,
+        seed: Optional[int] = None,
         **kwargs,
     ):
         r"""
@@ -330,7 +344,24 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         
 
 
-        
+        if(seed is not None):
+            torch.manual_seed(seed)
+            torch.cuda.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+            np.random.seed(seed)
+            set_seed(seed)            
+            torch.backends.cudnn.deterministic = True
+            torch.backends.cudnn.benchmark = False
+        else:
+            seed = random.randint(0, 1000000)
+            torch.manual_seed(seed)
+            torch.cuda.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+            np.random.seed(seed)
+            set_seed(seed)
+            
+            torch.backends.cudnn.deterministic = True
+            torch.backends.cudnn.benchmark = False
         
         if ckpt_path is not None:
             clpText = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
@@ -388,17 +419,51 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
                 raise ValueError(
                     f"Unexpected latents shape, got {latents.shape}, expected {latents_shape}"
                 )
+        self.scheduler.set_timesteps(num_inference_steps, **extra_set_kwargs)
         latents = latents.to(self.device)
+        init_timestep = 0
+        if(init_image is not None):        
+            init_image = preprocess(init_image)
+
+            # encode the init image into latents and scale the latents
+            init_latent_dist = self.vae.encode(init_image.to(self.device)).latent_dist
+            init_latents = init_latent_dist.sample(generator=generator)
+            init_latents = 0.18215 * init_latents
+
+            # expand init_latents for batch_size
+            init_latents = torch.cat([init_latents] * batch_size)
+
+            # get the original timestep using init_timestep
+            init_timestep = int(num_inference_steps * strength) + offset
+            init_timestep = min(init_timestep, num_inference_steps)
+            if isinstance(self.scheduler, LMSDiscreteScheduler):
+                timesteps = torch.tensor(
+                    [num_inference_steps - init_timestep] * batch_size,
+                    dtype=torch.long,
+                    device=self.device,
+                )
+            else:
+                timesteps = self.scheduler.timesteps[-init_timestep]
+                timesteps = torch.tensor(
+                    [timesteps] * batch_size, dtype=torch.long, device=self.device
+                )
+            noise = torch.randn(init_latents.shape, generator=generator, device=self.device)
+            init_latents = self.scheduler.add_noise(init_latents, noise, timesteps).to(self.device)
+            latents = init_latents
+
 
         # set timesteps
         accepts_offset = "offset" in set(
             inspect.signature(self.scheduler.set_timesteps).parameters.keys()
         )
         extra_set_kwargs = {}
+        offset = 0
         if accepts_offset:
+            offset = 1
             extra_set_kwargs["offset"] = 1
 
-        self.scheduler.set_timesteps(num_inference_steps, **extra_set_kwargs)
+
+        
 
         # if we use LMSDiscreteScheduler, let's make sure latents are multiplied by sigmas
         if isinstance(self.scheduler, LMSDiscreteScheduler):
@@ -414,16 +479,20 @@ class StableDiffusionAITPipeline(StableDiffusionPipeline):
         extra_step_kwargs = {}
         if accepts_eta:
             extra_step_kwargs["eta"] = eta
-
-        for i, t in enumerate(self.progress_bar(self.scheduler.timesteps)):
+        t_start = max(num_inference_steps - init_timestep + offset, 0)
+        for i, t in enumerate(self.progress_bar(self.scheduler.timesteps[t_start:])):
+            t_index = t_start + i
             # expand the latents if we are doing classifier free guidance
             latent_model_input = (
                 torch.cat([latents] * 2) if do_classifier_free_guidance else latents
             )
             if isinstance(self.scheduler, LMSDiscreteScheduler):
-                sigma = self.scheduler.sigmas[i]
+                sigma = self.scheduler.sigmas[t_index]
                 # the model input needs to be scaled to match the continuous ODE formulation in K-LMS
-                latent_model_input = latent_model_input / ((sigma**2 + 1) ** 0.5)
+                latent_model_input = latent_model_input / ((sigma ** 2 + 1) ** 0.5)
+                latent_model_input = latent_model_input.to(self.unet.dtype)
+                t = t.to(self.unet.dtype)
+
 
             # predict the noise residual
             noise_pred = self.unet_inference(

@@ -37,13 +37,22 @@ sem = threading.Semaphore()
 def render():        
         vocab = ""
         prompt = request.args.get('prompt', '')        
-        steps = int(request.args.get('steps', "50"))        
+        steps = int(request.args.get('steps', "50"))
+        strength = float(request.args.get('strength', "0.8"))
+        seed = int(request.args.get('seed', "0"))
+        if(seed == 0):
+            seed = None        
+        init_image_seed = int(request.args.get('init_image_seed', "0"))        
+        
         if(vocab == ""):
             vocab = None
         sem.acquire()
         try:
             with torch.autocast("cuda"):
-                image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab).images[0]
+                init_image = None
+                if(init_image_seed != 0):
+                    init_image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab,0.0,None,init_image_seed).images[0]                
+                image = pipe(prompt,512,512,steps,7.5,0.0,None,None,'pil',True,vocab,strength,init_image).images[0]
         finally:
             sem.release()
         img_io = BytesIO()
@@ -51,15 +60,22 @@ def render():
         img_io.seek(0)
         return send_file(img_io, mimetype='image/jpeg')
 
+
 @app.route("/rendermany")
 def rendermany():
-    html = "<html><body><h1>"
+    html = "<html><body>"    
     prompt = request.args.get('prompt', '')
     steps = int(request.args.get('steps', "50"))
+    seed = int(request.args.get('seed', "0"))
+    init_image_seed = int(request.args.get('init_image_seed', "0"))
+    scriptStr = "function onImageClick(e){var img = e.target;var seed = img.getAttribute('seed');window.location.href = '/rendermany&init_image_seed=' + seed + '&prompt="+prompt+"&steps=' + steps + '&seed="+seed+"';}"
+    scriptStr = f"<script>{scriptStr}</script>"
+    html += scriptStr
+
     n = int(request.args.get('n', "3"))
     for i in range(n):
-        html += f"<img src='/?prompt={prompt}&steps={steps}&i={i}'></img>"
-    html += "</h1></body></html>"
+        html += f"<img src='/?prompt={prompt}&steps={steps}&i={i}&seed={seed+i}&init_image_seed={init_image_seed}' seed='{seed + i}' onclick='onImageClick(event)'></img>"
+    html += "</body></html>"
     return html
 
 # static files
