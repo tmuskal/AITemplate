@@ -63,7 +63,7 @@
             var newseed = parseInt(urlParams2.get('seed'));
             var oldprompt = urlParams2.get('prompt');
             if(oldprompt == prompt){                
-                newsteps = steps * factor;                
+                newsteps = newsteps * factor;                
                 newsteps = Math.round(newsteps);
                 newsteps = Math.max(newsteps, 1);
                 newsteps = Math.min(newsteps, 200);
