@@ -48,7 +48,6 @@ from io import StringIO,BytesIO
 sem = threading.Semaphore()
     
 @app.route("/")
-@cache.cached()
 def render():        
         vocab = ""
         prompt = request.args.get('prompt', '')
@@ -58,7 +57,10 @@ def render():
         if(seed == 0):
             seed = None        
         origImage = request.args.get('origImage', "")
-        
+        cacheKey = f"{prompt}_{steps}_{strength}_{seed}_{origImage}"
+        cached = cache.get(cacheKey)
+        if(cached is not None):
+            return send_file(BytesIO(cached),mimetype='image/png')
         if(vocab == ""):
             vocab = None
         init_image = None
@@ -78,6 +80,7 @@ def render():
         img_io = BytesIO()
         image.save(img_io, 'JPEG', quality=90)
         img_io.seek(0)
+        cache.set(cacheKey,img_io.getvalue())
         return send_file(img_io, mimetype='image/jpeg')
 
 # static files
