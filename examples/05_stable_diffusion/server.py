@@ -68,7 +68,7 @@ def rendermany():
     steps = int(request.args.get('steps', "50"))
     seed = int(request.args.get('seed', "0"))
     init_image_seed = int(request.args.get('init_image_seed', "0"))
-    scriptStr = "function onImageClick(e){var img = e.target;var seed = img.getAttribute('seed');window.location.href = '/rendermany&init_image_seed=' + seed + '&prompt="+prompt+"&steps=' + steps + '&seed="+seed+"';}"
+    scriptStr = "function onImageClick(e){var img = e.target;var seed = img.getAttribute('seed');window.location.href = '/rendermany&init_image_seed=' + seed + '&prompt="+prompt+"&steps="+str(steps)+"&seed="+str(seed)+"';}"
     scriptStr = f"<script>{scriptStr}</script>"
     html += scriptStr
 
