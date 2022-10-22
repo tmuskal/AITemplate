@@ -3,13 +3,12 @@
 <title>Riff Lightning Diffusion</title>
 </head>
 <body>
+    
+
     <h1>Riff Lightning Diffusion</h1>
-    <label for="prompt">Prompt:</label>
-    <textarea id="prompt" rows="10" cols="80"></textarea>    
-    <button id="generate">Generate</button>
-    <div id="output"></div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+
     <script>
         var defaultPrompt = "photo of a unicorn";
         // override default prompt with URL parameter
@@ -17,8 +16,6 @@
         if (urlParams.has('prompt')) {
             defaultPrompt = urlParams.get('prompt');
         }
-        $("#prompt").val(defaultPrompt);
-
         var n = 3;
         if (urlParams.has('n')) {
             n = urlParams.get('n');
@@ -79,6 +76,77 @@
                 $('#output').append(img);
             }
         }
+        var onReplaceFn = function(){
+            // get the images
+            var imgs = $('#output img');
+            var replaceStr = $('#replace').val();
+            var withStr = $('#with').val();
+            // replace ALL words with new word in each image url
+            for(var i = 0; i < imgs.length; i++){
+                var img = $(imgs[i]);
+                var url = img.attr('src');                
+                newUrl = url.replaceAll(replaceStr, withStr);
+                img.attr('src', newUrl);
+            }
+            // replace in current prompt
+            var prompt = $('#prompt').val();
+            var newprompt = prompt.replaceAll(replaceStr, withStr);
+            if(newprompt != prompt){
+                $('#prompt').val(newprompt);                
+            }            
+        }
+
+    </script>
+    <style type="text/css">
+        body {
+            font-family: sans-serif;
+        }
+        #output img {
+            width: 100%;
+            max-width: 400px;
+            margin: 10px;
+        }
+        #output {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        #prompt {
+            width: 100%;
+            max-width: 400px;
+        }
+        #replace {
+            width: 100%;
+            max-width: 400px;
+        }
+        #with {
+            width: 100%;
+            max-width: 400px;
+        }
+    </style>
+    <!-- two forms side by side -->
+    <div id="forms">
+        <form onsubmit="onGenerateClickFn" id="form1">
+            <label for="prompt">Prompt:</label>
+            <input type="text" id="prompt" value=""></input>
+            <input type="button" value="Generate" onclick="onGenerateClickFn()"></input>
+        </form>
+        <form onsubmit="onReplaceFn" id="form2">
+            <label for="replace">Replace:</label>
+            <input type="text" id="replace"></input>
+            <label for="with">With:</label>
+            <input type="text" id="with"></input>
+            <input type="button" value="Replace" onclick="onReplaceFn()"></input>
+        </form>
+    </div>
+    <div id="output"></div>
+    <script>
+        var defaultPrompt = "photo of a unicorn";
+        // override default prompt with URL parameter
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('prompt')) {
+            defaultPrompt = urlParams.get('prompt');
+        }
+        $("#prompt").val(defaultPrompt);
         $('#generate').click(onGenerateClickFn);
         onGenerateClickFn();
 
