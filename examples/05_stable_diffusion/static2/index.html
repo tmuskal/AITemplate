@@ -129,7 +129,26 @@
             $('#replace').val(withStr);
             $('#with').val('');
         }
+        var onGenerateWildcardURL = function(){
+            var imgs = $('#output img');
+            var replaceStr = $('#replace').val();
+            var withStr = $('#with').val();            
+            var img = null;
+            for(var i = 0; i < imgs.length; i++){
+                img = $(imgs[i]);
+                break;
+            }
+            if(img == null){
+                return;
+            }
+            var url = img.attr('src');
+            url = url + "&wildcard1=" + encodeURIComponent(replaceStr);
+            url = url + "&param1=" + encodeURIComponent(withStr);
+            $(".wildcardURLContainer").removeClass("hidden");
+            // populate url in href attribute
+            $('#wildcardURL').attr('href', url);
 
+        }
     </script>
     <style type="text/css">
         body {
@@ -156,6 +175,9 @@
             width: 100%;
             max-width: 400px;
         }
+        .hidden {
+            display: none;
+        }
     </style>
     <!-- two forms side by side -->
     <div id="forms">
@@ -170,6 +192,10 @@
             <label for="with">With:</label>
             <input type="text" id="with"></input>
             <input type="button" value="Replace" onclick="onReplaceFn()"></input>
+            <input type="button" value="Replace2" onclick="onGenerateWildcardURL()"></input>
+            <span id="wildcardURLContainer" class="hidden">Wildcard URL:
+                <a id="wildcardURL" href="" target="_blank">COPY LINK</a>
+            </span>
         </form>
     </div>
     <div id="output"></div>

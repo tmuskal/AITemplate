@@ -50,6 +50,8 @@ sem = threading.Semaphore()
 @app.route("/")
 def render():        
         vocab = ""
+        param1 = request.args.get('param1', '')
+        wildcard1 = request.args.get('wildcard1', '')
         prompt = request.args.get('prompt', '')
         steps = int(request.args.get('steps', "50"))
         strength = float(request.args.get('strength', "0.8"))
@@ -57,6 +59,14 @@ def render():
         if(seed == 0):
             seed = None        
         origImage = request.args.get('origImage', "")
+        
+        if(wildcard1 != ""):
+            # replace all instances of wildcard1 with param1
+            prompt = prompt.replace(wildcard1,param1)
+            origImage = origImage.replace(wildcard1,param1)
+            
+
+
         cacheKey = f"{prompt}_{steps}_{strength}_{seed}_{origImage}"
         cached = cache.get(cacheKey)
         if(cached is not None):
