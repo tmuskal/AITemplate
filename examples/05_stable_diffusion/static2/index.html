@@ -149,6 +149,32 @@
             $('#wildcardURL').attr('href', url);
 
         }
+        var onGenerateWithWildcard = function(){
+            var txtArea = $('#listOfThings');
+            var lines = txtArea.val().split('\n');
+            var replaceStr = $('#replace').val();
+            var img = null;
+            for(var i = 0; i < imgs.length; i++){
+                img = $(imgs[i]);
+                break;
+            }
+            if(img == null){
+                return;
+            }
+
+            $('#output').html('');
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                var newImage = $('<img>');
+                var url = img.attr('src');
+                // replace wildcard with line
+                url = url.replaceAll(replaceStr, line);
+                newImage.attr('src', url);
+                newImage.click(imageClick);
+                $('#output').append(newImage);
+            }
+
+        }
     </script>
     <style type="text/css">
         body {
@@ -195,7 +221,11 @@
             <input type="button" value="Replace2" onclick="onGenerateWildcardURL()"></input>
             <span id="wildcardURLContainer" class="hidden">Wildcard URL:
                 <a id="wildcardURL" href="" target="_blank">COPY LINK</a>
+                <label for="listOfThings">Things:</label>
+                <textarea id="listOfThings"></textarea>
+                <input type="button" value="Replace3" onclick="onGenerateWithWildcard()"></input>
             </span>
+            
         </form>
     </div>
     <div id="output"></div>
