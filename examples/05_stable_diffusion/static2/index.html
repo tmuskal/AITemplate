@@ -182,9 +182,14 @@
                 var line = lines[i];
                 var newImage = $('<img>');
                 var url = img.attr('src');
+                
+
+
                 // replace wildcard with line
                 url = url.replaceAll(replaceStr, line);
                 newImage.attr('src', url);
+                // add line to alt text
+                newImage.attr('alt', line);
                 newImage.click(imageClick);
                 $('#output').append(newImage);
             }
