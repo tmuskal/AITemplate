@@ -40,11 +40,13 @@
             strengthfactor = urlParams.get('strengthfactor');
             strengthfactor = parseFloat(strengthfactor);
         }
-        
+        var lastPrompt = ""
+
         var onGenerateClickFn =function() {
             var prompt = $('#prompt').val();
             $('#output').html('');
-            
+            lastPrompt = prompt;
+
             for (var i = 0; i < n; i++) {
                 var img = $('<img>');
                 var Href = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+steps+'&seed=' + (seed + i+1) + '&strength=' + strength ;
@@ -57,11 +59,18 @@
             theimg = $(this);
             var url = theimg.attr('src');            
             var urlParams2 = new URLSearchParams(url.split('?')[1]);
+            var oldprompt = urlParams2.get('prompt');
             var prompt = $('#prompt').val();
+            if(lastPrompt == prompt){
+                $('#prompt').val(oldprompt);
+                lastPrompt = oldprompt;
+                prompt = lastPrompt;
+            }            
+
             var newsteps = parseInt(urlParams2.get('steps'));
             var newstrength = parseFloat(urlParams2.get('strength'));
             var newseed = parseInt(urlParams2.get('seed'));
-            var oldprompt = urlParams2.get('prompt');
+            
             if(oldprompt == prompt){ 
                 newsteps = newsteps * factor;
                 newsteps = Math.round(newsteps);
