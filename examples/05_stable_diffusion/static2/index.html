@@ -173,6 +173,11 @@
             }
 
             $('#output').html('');
+            // append original
+            var newImage = $('<img>');
+            newImage.attr('src', img.attr('src'));
+            newImage.click(imageClick);
+            $('#output').append(newImage);            
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i];
                 var newImage = $('<img>');
