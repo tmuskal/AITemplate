@@ -7,8 +7,7 @@
 
     <h1>Riff Lightning Diffusion</h1>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
-    <script src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>    
     <script>
         // override default prompt with URL parameter
         var urlParams = new URLSearchParams(window.location.search);
@@ -277,19 +276,16 @@
             return null;
         }
         if(enableInfiniteScroll){
-            $('#output').infiniteScroll({
-            // options
-            path: getPenPath,
-            history: false,
-            });
-            $('#output').on( 'scrollThreshold.infiniteScroll', function( event ) {
-                console.log('Scroll at bottom');
-                if(lastImageClicked != null){
-                    // increase n by 8 and emulate click
-                    n = n + 8;
-                    lastImageClicked.click();                    
-                }
-            });
+            $(window).scroll(function() {
+                if($(window).scrollTop() + $(window).height() == $(document).height()) {
+                    console.log('Scroll at bottom');
+                    if(lastImageClicked != null && enableInfiniteScroll){
+                            // increase n by 8 and emulate click
+                            n = n + 8;
+                            lastImageClicked.click();                    
+                        }
+                    }
+                });            
         }
 
     </script>
