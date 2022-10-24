@@ -272,9 +272,6 @@
         $("#prompt").val(defaultPrompt);
         $('#generate').click(onGenerateClickFn);
         onGenerateClickFn();
-        function getPenPath(){
-            return null;
-        }
         if(enableInfiniteScroll){
             $(window).scroll(function() {
                 if($(window).scrollTop() + $(window).height() == $(document).height()) {
