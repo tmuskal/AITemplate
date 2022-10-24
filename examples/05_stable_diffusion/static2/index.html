@@ -188,8 +188,10 @@
                 // replace wildcard with line
                 url = url.replaceAll(replaceStr, line);
                 newImage.attr('src', url);
-                // add line to alt text
+                // add line to alt-text
                 newImage.attr('alt', line);
+                // title
+                newImage.attr('title', line);
                 newImage.click(imageClick);
                 $('#output').append(newImage);
             }
