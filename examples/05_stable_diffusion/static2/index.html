@@ -8,14 +8,20 @@
     <h1>Riff Lightning Diffusion</h1>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
-
+    <script src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
     <script>
         // override default prompt with URL parameter
         var urlParams = new URLSearchParams(window.location.search);
-        var n = 8;
+        var orign = 8;
         if (urlParams.has('n')) {
-            n = parseInt(urlParams.get('n'));
+            orign = parseInt(urlParams.get('n'));
         }
+        enableInfiniteScroll = false;
+        if(orign > 16){
+            enableInfiniteScroll = true;
+            orign = 16;
+        }
+        var n = orign;
         var steps = 15;
         if (urlParams.has('steps')) {
             steps = urlParams.get('steps');
@@ -41,12 +47,14 @@
             strengthfactor = parseFloat(strengthfactor);
         }
         var lastPrompt = ""
+        const lastImageClicked = null;
 
         var onGenerateClickFn =function() {
             var prompt = $('#prompt').val();
             $('#output').html('');
             lastPrompt = prompt;
-
+            n = orign;
+            lastImageClicked = null;
             for (var i = 0; i < n; i++) {
                 var img = $('<img>');
                 var Href = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+steps+'&seed=' + (seed + i+1) + '&strength=' + strength ;
@@ -57,6 +65,10 @@
         }
         var imageClick = function(){
             theimg = $(this);
+            if(lastImageClicked != image){
+                n = orign;
+            }
+            lastImageClicked = theimg;            
             var url = theimg.attr('src');            
             var urlParams2 = new URLSearchParams(url.split('?')[1]);
             var oldprompt = urlParams2.get('prompt');
@@ -171,7 +183,7 @@
             if(img == null){
                 return;
             }
-
+            lastImageClicked = null;
             $('#output').html('');
             // append original
             var newImage = $('<img>');
@@ -261,6 +273,22 @@
         $("#prompt").val(defaultPrompt);
         $('#generate').click(onGenerateClickFn);
         onGenerateClickFn();
+        if(enableInfiniteScroll){
+            $('#output').infiniteScroll({
+            // options
+            //   path: getPenPath,
+            //   append: 'img',
+            history: false,
+            });
+            $('#output').on( 'scrollThreshold.infiniteScroll', function( event ) {
+                console.log('Scroll at bottom');
+                if(lastImageClicked != null){
+                    // increase n by 8 and emulate click
+                    n = n + 8;
+                    lastImageClicked.click();                    
+                }
+            });
+        }
 
     </script>
 </body>
