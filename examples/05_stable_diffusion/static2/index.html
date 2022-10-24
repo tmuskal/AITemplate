@@ -52,7 +52,11 @@
             var prompt = $('#prompt').val();
             $('#output').html('');
             lastPrompt = prompt;
-            n = orign;
+            if(lastImageClicked != null && lastImageClicked != true){
+                lastImageClicked.remove();            
+                n = orign;
+            }
+            
             lastImageClicked = true;
             
             for (var i = 0; i < n; i++) {
