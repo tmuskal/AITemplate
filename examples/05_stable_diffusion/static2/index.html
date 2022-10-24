@@ -53,7 +53,8 @@
             $('#output').html('');
             lastPrompt = prompt;
             n = orign;
-            lastImageClicked = null;
+            lastImageClicked = true;
+            
             for (var i = 0; i < n; i++) {
                 var img = $('<img>');
                 var Href = '/?prompt=' + encodeURIComponent(prompt)+'&steps='+steps+'&seed=' + (seed + i+1) + '&strength=' + strength ;
@@ -64,7 +65,7 @@
         }
         var imageClick = function(){
             theimg = $(this);
-            if(lastImageClicked != image){
+            if(lastImageClicked != theimg){
                 n = orign;
             }
             lastImageClicked = theimg;            
@@ -277,9 +278,11 @@
                 if($(window).scrollTop() + $(window).height() == $(document).height()) {
                     console.log('Scroll at bottom');
                     if(lastImageClicked != null && enableInfiniteScroll){
-                            // increase n by 8 and emulate click
                             n = n + 8;
-                            lastImageClicked.click();                    
+                            if(lastImageClicked === true)
+                                onGenerateClickFn();                            
+                            else                            
+                                lastImageClicked.click();                    
                         }
                     }
                 });            
