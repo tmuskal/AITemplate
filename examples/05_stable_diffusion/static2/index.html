@@ -273,11 +273,14 @@
         $("#prompt").val(defaultPrompt);
         $('#generate').click(onGenerateClickFn);
         onGenerateClickFn();
+        function getPenPath(){
+            return null;
+        }
         if(enableInfiniteScroll){
             $('#output').infiniteScroll({
             // options
-            //   path: getPenPath,
-            //   append: 'img',
+            path: getPenPath,
+            append: 'img',
             history: false,
             });
             $('#output').on( 'scrollThreshold.infiniteScroll', function( event ) {
