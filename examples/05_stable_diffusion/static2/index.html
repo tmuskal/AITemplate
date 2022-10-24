@@ -279,7 +279,7 @@
         onGenerateClickFn();
         if(enableInfiniteScroll){
             $(window).scroll(function() {
-                if($(window).scrollTop() + $(window).height() == $(document).height()) {
+                if(window.outerHeight + $(window).scrollTop() > $(window).height()) {
                     console.log('Scroll at bottom');
                     if(lastImageClicked != null && enableInfiniteScroll){
                             n = n + 8;
