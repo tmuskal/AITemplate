@@ -48,12 +48,11 @@
         var lastPrompt = ""
         var lastImageClicked = null;
 
-        var onGenerateClickFn =function() {
+        var onGenerateClickFn =function(isExtend) {
             var prompt = $('#prompt').val();
             $('#output').html('');
             lastPrompt = prompt;
-            if(lastImageClicked != null && lastImageClicked != true){
-                lastImageClicked.remove();            
+            if(isExtend !== true){                
                 n = orign;
             }
             
@@ -304,7 +303,7 @@
                             lastTime = new Date().getTime();
                             n = n + 8;
                             if(lastImageClicked === true)
-                                onGenerateClickFn();                            
+                                onGenerateClickFn(true);                            
                             else                            
                                 lastImageClicked.click();                    
                         }
