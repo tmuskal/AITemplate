@@ -280,7 +280,16 @@
         var lastTime = new Date().getTime();
         if(enableInfiniteScroll){
             $(window).scroll(function() {
-                if(window.outerHeight + $(window).scrollTop() > $(window).height()) {
+
+                // check if we're within 100 pixels of the bottom edge of the broser window
+                if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+                //     var now = new Date().getTime();
+                //     if(now - lastTime > 1000){
+                //         lastTime = now;
+                //         onGenerateClickFn();
+                //     }
+                // }
+                // if(window.outerHeight + $(window).scrollTop() > $(window).height()) {
                     console.log('Scroll at bottom');
                     
                     if(lastImageClicked != null && enableInfiniteScroll){
