@@ -277,11 +277,22 @@
         $("#prompt").val(defaultPrompt);
         $('#generate').click(onGenerateClickFn);
         onGenerateClickFn();
+        var lastTime = new Date().getTime();
         if(enableInfiniteScroll){
             $(window).scroll(function() {
                 if(window.outerHeight + $(window).scrollTop() > $(window).height()) {
                     console.log('Scroll at bottom');
+                    
                     if(lastImageClicked != null && enableInfiniteScroll){
+                            if(lastTime){
+                                var now = new Date().getTime();
+                                var diff = now - lastTime;
+                                if(diff < 5000){
+                                    console.log('too soon');
+                                    return;
+                                }
+                            }
+                            lastTime = new Date().getTime();
                             n = n + 4;
                             if(lastImageClicked === true)
                                 onGenerateClickFn();                            
