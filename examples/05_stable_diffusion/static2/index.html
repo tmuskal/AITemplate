@@ -66,11 +66,17 @@
                 $('#output').append(img);
             }            
         }
-        var imageClick = function(){
-            theimg = $(this);
-            if(lastImageClicked != theimg){
-                n = orign;
+        var imageClick = function(existingImage){
+            var theimg = null;
+            if(existingImage === lastImageClicked){
+                // extend
+                theimg = existingImage;
             }
+            else{
+                n = orign;
+                theimg = $(this);
+            }
+            
             lastImageClicked = theimg;            
             var url = theimg.attr('src');            
             var urlParams2 = new URLSearchParams(url.split('?')[1]);
@@ -304,8 +310,8 @@
                             n = n + 8;
                             if(lastImageClicked === true)
                                 onGenerateClickFn(true);                            
-                            else                            
-                                lastImageClicked.click();                    
+                            else
+                                imageClick(lastImageClicked);                                
                         }
                     }
                 });            
